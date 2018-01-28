@@ -8,8 +8,8 @@
  */
 
 // 命令空间类调用方式
-// new tmqtan\net\HttpCurl()
-namespace tmqtan\net;
+// new net\http\curl\HttpCurl();
+namespace net\http\curl;
 
 // Response类，用于对响应数据进行一定的处理，比如转换json字符串进行输出等.
 class HttpResponse {
@@ -35,7 +35,7 @@ class HttpResponse {
         return $this -> _extract() -> _convert();
     }
 
-    function _extract() {
+    private function _extract() {
         $header_size = $this -> _info['header_size'];
 
         if ($this -> _open_parse_header) {
@@ -49,7 +49,7 @@ class HttpResponse {
         return $this;
     }
 
-    function _parse_header_content($content) {
+    private function _parse_header_content($content) {
         $header_ct = explode("\r\n\r\n", trim($content));
         $header_ct = array_shift($header_ct);
         $header_ct = explode("\r\n", $header_ct);
@@ -68,7 +68,7 @@ class HttpResponse {
         return $header;
     }
 
-    function _convert(){
+    private function _convert(){
         switch($this -> _data_type) {
             case 'json' :
                 $this -> _json_val();
@@ -86,7 +86,7 @@ class HttpResponse {
         return $this;
     }
 
-    function _json_val() {
+    private function _json_val() {
         $this -> _extract_data['body'] = json_decode($this -> _extract_data['body']);
         return $this;
     }
@@ -132,6 +132,7 @@ class HttpResponse {
     }
 };
 
+// HttpCurl 操作类
 class HttpCurl{
     // private field members
     private static $_version = '0.0.1';
@@ -166,11 +167,10 @@ class HttpCurl{
     // private function members
 
     function __construct() {
-        $this -> _http_response = new HttpResponse();
-        $this -> _options = array_merge(array(), HttpCurl::$_default_options);
+        $this -> reset_environment();
     }
 
-    function _init_curl($url) {
+    private function _init_curl($url) {
         $this -> _curl = curl_init();
         $this -> _options['CURLOPT_URL'] = $url;
 
@@ -184,12 +184,12 @@ class HttpCurl{
         return $this;
     }
 
-    function _exec_curl() {
+    private function _exec_curl() {
         $this -> _http_response -> init($this -> _curl, (string) curl_exec($this -> _curl));
         return $this;
     }
 
-    function _end_curl() {
+    private function _end_curl() {
         curl_close($this -> _curl);
         $this -> _curl = null;
         return $this;
@@ -198,27 +198,27 @@ class HttpCurl{
     // public functions
     // request functions
 
-    function _reset_retry_threshold() {
+    private function _reset_retry_threshold() {
         return $this -> set_retry_threshold(0);
     }
 
-    function _set_http_header() {
+    private function _set_http_header() {
         curl_setopt($this -> _curl, CURLOPT_HTTPHEADER, $this -> _http_header);
         return $this;
     }
 
-    function _set_http_cookies() {
+    private function _set_http_cookies() {
         curl_setopt($this -> _curl, CURLOPT_COOKIE, $this -> _cookies);
         return $this;
     }
 
-    function _set_http_post() {
+    private function _set_http_post() {
         curl_setopt($this -> _curl, CURLOPT_POST, 1);
         curl_setopt($this -> _curl, CURLOPT_POSTFIELDS, $this->_post_data);
         return $this;
     }
 
-    function _try_retry($url, $method) {
+    private function _try_retry($url, $method) {
         if ($this -> _http_response -> error() && $this -> _retry_threshold > 0) {
             $this -> _retry_threshold --;
             $method($url);
