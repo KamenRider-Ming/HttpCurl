@@ -31,7 +31,7 @@ PHP语言下，实现对CURL的封装，暂时只支持GET和POST，尽快将所
 
 ```php
 // post
-$http_curl = new tmqtan\net\HttpCurl();
+$http_curl = new net\http\curl\HttpCurl();
 $http_rsp = $http_curl -> set_header($header)
                   -> set_cookies($cookie_fields)
                   -> set_post($post_fields)
