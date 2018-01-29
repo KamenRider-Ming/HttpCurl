@@ -102,7 +102,7 @@ class HttpCurl{
     private function _try_retry($url, $method) {
         if ($this -> _http_response -> error() && $this -> _retry_threshold > 0) {
             $this -> _retry_threshold --;
-            $method($url);
+            call_user_func(array($this, $method), $url);
         }
 
         return $this -> _reset_retry_threshold();
@@ -149,7 +149,7 @@ class HttpCurl{
                      -> _set_http_post()
                      -> _exec_curl()
                      -> _end_curl()
-                     -> _try_retry($url, $this -> post);
+                     -> _try_retry($url, 'post');
     }
 
     function get($url) {
@@ -158,7 +158,7 @@ class HttpCurl{
                      -> _set_http_header()
                      -> _exec_curl()
                      -> _end_curl()
-                     -> _try_retry($url, $this -> get);
+                     -> _try_retry($url, 'get');
     }
 
     // 支持字符串和数组类型
