@@ -187,7 +187,7 @@ class HttpCurl{
     }
 
     function set_content_type($value = 'application/x-www-form-urlencoded') {
-        return $this -> set_http_header('Content-Type', $value);
+        return $this -> set_header('Content-Type', $value);
     }
 
     function set_response_type($value = 'text') {
@@ -197,7 +197,7 @@ class HttpCurl{
 
     // 服务器不支持Expect字段会报错，谨慎使用.
     function open_post_rapid_channel() {
-        return $this->set_http_header('Expect');
+        return $this -> set_header('Expect', '');
     }
 
     function reset_environment() {
